@@ -3,17 +3,18 @@ module Main where
 import Data.List (sort)
 import Test.QuickCheck
 
-mergeSort :: (Ord a) => [a] -> [a] -> [a]
-mergeSort [] b = b
-mergeSort a [] = a
-mergeSort a@(ahead:atail) b@(bhead:btail) = if ahead < bhead
-                                            then ahead:mergeSort atail b
-                                            else bhead:mergeSort a btail
+merge :: (Ord a) => [[a]] -> [a]
+merge = foldl merge' []
 
-test :: [Int] -> [Int] -> Bool
-test a b = mergeSort x y == sort (x ++ y)
-        where x = sort a
-              y = sort b
+merge' :: (Ord a) => [a] -> [a] -> [a]
+merge' [] b = b
+merge' a [] = a
+merge' a@(ahead:atail) b@(bhead:btail) = if ahead < bhead
+                                            then ahead:merge' atail b
+                                            else bhead:merge' a btail
+
+test :: [[Int]] -> Bool
+test xs = merge (map sort xs) == sort (concat xs)
 
 main :: IO ()
 main = quickCheck test
