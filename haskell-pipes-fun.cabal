@@ -14,5 +14,6 @@ executable haskell-pipes-fun
   ghc-options: -Wall -Werror -fwarn-tabs
   main-is: main.hs
   build-depends:       base >=4.6 && <4.7,
+                       pipes == 4.0.0,
                        QuickCheck == 2.6
   default-language:    Haskell2010

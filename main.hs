@@ -1,6 +1,8 @@
 module Main where
 
 import Data.List (sort)
+import Pipes
+import qualified Pipes.Prelude as P
 import Test.QuickCheck
 
 merge :: (Ord a) => [[a]] -> [a]
@@ -16,5 +18,8 @@ merge' a@(ahead:atail) b@(bhead:btail) = if ahead < bhead
 test :: [[Int]] -> Bool
 test xs = merge (map sort xs) == sort (concat xs)
 
+runTests :: IO ()
+runTests = quickCheck test
+
 main :: IO ()
-main = quickCheck test
+main = runEffect $ for P.stdinLn (lift . putStrLn)
