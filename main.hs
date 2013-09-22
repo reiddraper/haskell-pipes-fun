@@ -40,7 +40,7 @@ myCat = forever $ do
 
 myDelay i = forever $ do
           x <- await
-          lift $ Concurrent.threadDelay i
+          lift $ lift $ Concurrent.threadDelay i
           yield x
 
 -- Pipes merge-sort
@@ -74,10 +74,7 @@ pathsToProducers :: (Safe.MonadSafe m, Safe.Base m ~ IO)
     -> [Proxy x' x () String m ()]
 pathsToProducers paths = map SafePrelude.readFile paths
 
-interleaveFiles :: MonadIO m
-    => [Producer String m ()]
-    -> Proxy Void () c' c m ()
-interleaveFiles sources = (I.interleave compare (sources)) >-> myDelay 250000 >-> P.stdoutLn
+interleaveFiles sources = (I.interleave compare (P.stdinLn:sources)) >-> myDelay 250 >-> P.stdoutLn
 
 main :: IO ()
 main = Safe.runSafeT $ runEffect $ interleaveFiles $ pathsToProducers ["/usr/share/dict/web2", "/usr/share/dict/words"]
